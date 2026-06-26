@@ -1,63 +1,58 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800">📦 Products</h2>
-            <a href="{{ route('admin.products.create') }}"
-               class="px-4 py-2 bg-cyan-600 text-white text-sm font-semibold rounded-lg hover:bg-cyan-700 transition">
-                + Add Product
-            </a>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+            <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;">📦 Products</h2>
+            <a href="{{ route('admin.products.create') }}" class="btn-gold" style="padding:0.5rem 1.2rem;font-size:0.85rem;">+ Add Product</a>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div style="padding:2.5rem 0;">
+        <div style="max-width:1280px;margin:0 auto;padding:0 1.5rem;">
 
-            @if (session('success'))
-                <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">{{ session('success') }}</div>
+            @if(session('success'))
+                <div class="alert-success">{{ session('success') }}</div>
             @endif
 
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <table class="w-full text-sm">
-                    <thead class="bg-gray-50 border-b border-gray-100">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-gray-600">Image</th>
-                            <th class="px-4 py-3 text-left text-gray-600">Name</th>
-                            <th class="px-4 py-3 text-left text-gray-600">Category</th>
-                            <th class="px-4 py-3 text-left text-gray-600">Price</th>
-                            <th class="px-4 py-3 text-left text-gray-600">Stock</th>
-                            <th class="px-4 py-3 text-left text-gray-600">Actions</th>
+            <div class="card" style="overflow:hidden;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+                    <thead>
+                        <tr style="background:var(--offwhite);border-bottom:2px solid var(--border);">
+                            <th style="padding:0.9rem 1rem;text-align:left;color:var(--text-muted);font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;">Image</th>
+                            <th style="padding:0.9rem 1rem;text-align:left;color:var(--text-muted);font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;">Name</th>
+                            <th style="padding:0.9rem 1rem;text-align:left;color:var(--text-muted);font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;">Category</th>
+                            <th style="padding:0.9rem 1rem;text-align:left;color:var(--text-muted);font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;">Price</th>
+                            <th style="padding:0.9rem 1rem;text-align:left;color:var(--text-muted);font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;">Stock</th>
+                            <th style="padding:0.9rem 1rem;text-align:left;color:var(--text-muted);font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($products as $product)
-                            <tr class="border-b border-gray-50 hover:bg-gray-50 transition">
-                                <td class="px-4 py-3">
-                                    <div class="w-12 h-12 bg-gray-100 rounded overflow-hidden">
-                                        @if ($product->image)
-                                            <img src="{{ asset('storage/' . $product->image) }}"
-                                                 class="w-full h-full object-cover">
+                        @forelse($products as $product)
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:0.8rem 1rem;">
+                                    <div style="width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--offwhite);">
+                                        @if($product->image)
+                                            <img src="{{ asset('storage/'.$product->image) }}" style="width:100%;height:100%;object-fit:cover;">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center text-xs text-gray-400">No img</div>
+                                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#9ca3af;">No img</div>
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-4 py-3 font-medium text-gray-900">{{ $product->name }}</td>
-                                <td class="px-4 py-3 text-gray-500">{{ $product->category->name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-gray-900">Rs. {{ number_format($product->price, 0) }}</td>
-                                <td class="px-4 py-3 text-gray-500">{{ $product->stock }}</td>
-                                <td class="px-4 py-3 flex items-center gap-3">
-                                    <a href="{{ route('admin.products.edit', $product) }}"
-                                       class="text-cyan-600 hover:underline text-xs font-medium">Edit</a>
-                                    <form action="{{ route('admin.products.destroy', $product) }}" method="POST"
-                                          onsubmit="return confirm('Delete this product?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:underline text-xs font-medium">Delete</button>
-                                    </form>
+                                <td style="padding:0.8rem 1rem;font-weight:600;color:var(--text-dark);">{{ $product->name }}</td>
+                                <td style="padding:0.8rem 1rem;color:var(--gold-dark);font-size:0.82rem;">{{ $product->category->name ?? '-' }}</td>
+                                <td style="padding:0.8rem 1rem;font-weight:600;color:var(--navy);">Rs. {{ number_format($product->price,0) }}</td>
+                                <td style="padding:0.8rem 1rem;color:var(--text-muted);">{{ $product->stock }}</td>
+                                <td style="padding:0.8rem 1rem;">
+                                    <div style="display:flex;gap:0.75rem;align-items:center;">
+                                        <a href="{{ route('admin.products.edit',$product) }}" style="font-size:0.8rem;font-weight:600;color:var(--gold-dark);text-decoration:none;">Edit</a>
+                                        <form action="{{ route('admin.products.destroy',$product) }}" method="POST" onsubmit="return confirm('Delete this product?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" style="font-size:0.8rem;font-weight:600;color:#ef4444;background:none;border:none;cursor:pointer;">Delete</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="px-4 py-8 text-center text-gray-400">No products yet.</td></tr>
+                            <tr><td colspan="6" style="padding:3rem;text-align:center;color:var(--text-muted);">No products yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
