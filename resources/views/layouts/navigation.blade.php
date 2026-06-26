@@ -1,12 +1,12 @@
-<nav class="shopzone-nav" x-data="{ open: false }">
+<nav class="shopzone-nav" id="mainNav">
     <div style="max-width:1280px;margin:0 auto;padding:0 1.5rem;">
         <div style="display:flex;align-items:center;justify-content:space-between;height:64px;">
 
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="nav-logo">🛍 ShopZone</a>
 
-            {{-- Desktop Links — always flex on desktop --}}
-            <div style="display:none;" id="desktopNav">
+            {{-- Desktop Links --}}
+            <div id="desktopNav" style="display:none;">
                 <div style="display:flex;align-items:center;gap:1.75rem;">
                     <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
                     @auth
@@ -24,7 +24,7 @@
             </div>
 
             {{-- Right Side --}}
-            <div style="display:none;" id="desktopRight">
+            <div id="desktopRight" style="display:none;">
                 <div style="display:flex;align-items:center;gap:1.2rem;">
                     @auth
                         @php $cartCount = \App\Models\CartItem::where('user_id',Auth::id())->sum('quantity'); @endphp
@@ -34,21 +34,28 @@
                             </svg>
                             @if($cartCount > 0)<span class="cart-badge">{{ $cartCount }}</span>@endif
                         </a>
-                        <div style="position:relative;" x-data="{ dropdown:false }">
-                            <button @click="dropdown=!dropdown" class="user-btn">
+
+                        {{-- User Dropdown --}}
+                        <div style="position:relative;">
+                            <button onclick="toggleDropdown()" id="userBtn" class="user-btn">
                                 {{ Auth::user()->name }}
-                                <svg style="width:13px;height:13px;display:inline;margin-left:4px;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                <svg style="width:13px;height:13px;display:inline;margin-left:4px;" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
                             </button>
-                            <div x-show="dropdown" @click.away="dropdown=false"
-                                 style="position:absolute;right:0;top:calc(100% + 8px);z-index:200;"
-                                 class="nav-dropdown">
+                            <div id="userDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);z-index:999;" class="nav-dropdown">
                                 <a href="{{ route('home') }}">🏠 Home</a>
                                 <a href="{{ route('dashboard') }}">📊 Dashboard</a>
                                 <a href="{{ route('profile.edit') }}">👤 Profile</a>
                                 <a href="{{ route('orders.history') }}">📦 My Orders</a>
                                 <a href="{{ route('wishlist.index') }}">❤ Wishlist</a>
-                                @if(Auth::user()->is_admin)<a href="{{ route('admin.dashboard') }}">⚙ Admin Panel</a>@endif
-                                <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit">🚪 Log Out</button></form>
+                                @if(Auth::user()->is_admin)
+                                    <a href="{{ route('admin.dashboard') }}">⚙ Admin Panel</a>
+                                @endif
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit">🚪 Log Out</button>
+                                </form>
                             </div>
                         </div>
                     @else
@@ -60,7 +67,7 @@
 
             {{-- Mobile Hamburger --}}
             <button id="mobileMenuBtn" onclick="toggleMobileMenu()"
-                    style="color:rgba(255,255,255,0.8);background:none;border:none;cursor:pointer;padding:0.5rem;display:none;">
+                    style="display:none;color:rgba(255,255,255,0.8);background:none;border:none;cursor:pointer;padding:0.5rem;">
                 <svg style="width:24px;height:24px;" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -97,23 +104,36 @@
     </div>
 
     <script>
-        // Responsive navbar without Tailwind breakpoints
+        // Responsive navbar
         function handleResize() {
-            const isDesktop = window.innerWidth >= 640;
+            var isDesktop = window.innerWidth >= 640;
             document.getElementById('desktopNav').style.display    = isDesktop ? 'block' : 'none';
             document.getElementById('desktopRight').style.display  = isDesktop ? 'block' : 'none';
-            document.getElementById('mobileMenuBtn').style.display = isDesktop ? 'none' : 'block';
-            if (isDesktop) {
-                document.getElementById('mobileMenu').style.display = 'none';
+            document.getElementById('mobileMenuBtn').style.display = isDesktop ? 'none'  : 'block';
+            if (isDesktop) document.getElementById('mobileMenu').style.display = 'none';
+        }
+
+        // Dropdown toggle
+        function toggleDropdown() {
+            var d = document.getElementById('userDropdown');
+            d.style.display = d.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            var btn = document.getElementById('userBtn');
+            var dropdown = document.getElementById('userDropdown');
+            if (dropdown && btn && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
             }
-        }
+        });
 
+        // Mobile menu toggle
         function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+            var m = document.getElementById('mobileMenu');
+            m.style.display = m.style.display === 'none' ? 'block' : 'none';
         }
 
-        // Run on load and resize
         handleResize();
         window.addEventListener('resize', handleResize);
     </script>
